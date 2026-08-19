@@ -1,2 +1,3 @@
 java/Stardust.db
 *.db
+.DS_Store
