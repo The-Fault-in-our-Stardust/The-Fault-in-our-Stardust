@@ -1,66 +1,189 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
 <head th:replace="~{layout :: head(${post.title})}"></head>
+
 <body>
+
 <div th:replace="~{header :: header}"></div>
+
 <div class="container mt-4">
+
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><span th:utext="${breadcrumb}">path</span></li>
+            <li class="breadcrumb-item">
+                <span th:utext="${breadcrumb}">path</span>
+            </li>
         </ol>
     </nav>
+
     <h2 th:text="${post.title}">Post Title</h2>
+
     <p class="text-muted">
-        Posted by <strong th:text="${post.user.username}">author</strong>
-        &mdash; <span th:text="${post.timeString}">time</span>
+        Posted by
+        <strong th:text="${post.user.username}">author</strong>
+        &mdash;
+        <span th:text="${post.timeString}">time</span>
     </p>
+
     <div class="card mb-4">
-        <div class="card-body" th:text="${post.content}">Content here</div>
+        <div class="card-body"
+             th:utext="${renderedContent}">
+            Content here
+        </div>
     </div>
+
+    <!-- POST REACTIONS -->
     <div sec:authorize="isAuthenticated()" class="mb-4">
-    <form th:action="@{/posts/{postId}/react(postId=${post.id})}" method="post" class="d-flex gap-2">
 
-        <button type="submit" name="type" value="LIKE" class="btn btn-light">
-            👍
-        </button>
+        <form th:action="@{/posts/{postId}/react(postId=${post.id})}"
+              method="post"
+              class="d-flex gap-2">
 
-        <button type="submit" name="type" value="DISLIKE" class="btn btn-light">
-            👎
-        </button>
+            <button type="submit"
+                    name="type"
+                    value="LIKE"
+                    class="btn btn-light">
+                👍 <span th:text="${likeCount}">0</span>
+            </button>
 
-        <button type="submit" name="type" value="LOVE" class="btn btn-light">
-            ❤️
-        </button>
+            <button type="submit"
+                    name="type"
+                    value="DISLIKE"
+                    class="btn btn-light">
+                👎 <span th:text="${dislikeCount}">0</span>
+            </button>
 
-        <button type="submit" name="type" value="LAUGH" class="btn btn-light">
-            😂
-        </button>
+            <button type="submit"
+                    name="type"
+                    value="LOVE"
+                    class="btn btn-light">
+                ❤️ <span th:text="${loveCount}">0</span>
+            </button>
 
-    </form>
+            <button type="submit"
+                    name="type"
+                    value="LAUGH"
+                    class="btn btn-light">
+                😂 <span th:text="${laughCount}">0</span>
+            </button>
+
+        </form>
+
     </div>
-    <h5>Comments (<span th:text="${#lists.size(comments)}">0</span>)</h5>
-    <div th:each="comment : ${comments}" class="comment-block">
-        <p th:text="${comment.content}">Comment content</p>
+
+    <h5>
+        Comments
+        (<span th:text="${#lists.size(comments)}">0</span>)
+    </h5>
+
+    <!-- COMMENTS -->
+    <div th:each="comment : ${comments}"
+         class="comment-block mb-3">
+
+        <p th:text="${comment.content}">
+            Comment content
+        </p>
+
         <small class="text-muted">
-            by <strong th:text="${comment.user.username}">author</strong>
-            &mdash; <span th:text="${comment.timeString}">time</span>
+            by
+            <strong th:text="${comment.user.username}">
+                author
+            </strong>
+            &mdash;
+            <span th:text="${comment.timeString}">
+                time
+            </span>
         </small>
+
+        <!-- COMMENT REACTIONS -->
+        <div sec:authorize="isAuthenticated()" class="mt-2">
+
+            <form th:action="@{/comments/{commentId}/react(commentId=${comment.id})}"
+                  method="post"
+                  class="d-flex gap-2">
+
+                <button type="submit"
+                        name="type"
+                        value="LIKE"
+                        class="btn btn-light btn-sm">
+                    👍
+                    <span th:text="${commentLikeCounts[comment.id]}">0</span>
+                </button>
+
+                <button type="submit"
+                        name="type"
+                        value="DISLIKE"
+                        class="btn btn-light btn-sm">
+                    👎
+                    <span th:text="${commentDislikeCounts[comment.id]}">0</span>
+                </button>
+
+                <button type="submit"
+                        name="type"
+                        value="LOVE"
+                        class="btn btn-light btn-sm">
+                    ❤️
+                    <span th:text="${commentLoveCounts[comment.id]}">0</span>
+                </button>
+
+                <button type="submit"
+                        name="type"
+                        value="LAUGH"
+                        class="btn btn-light btn-sm">
+                    😂
+                    <span th:text="${commentLaughCounts[comment.id]}">0</span>
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
-    <div th:if="${comments.isEmpty()}" class="text-muted">No comments yet.</div>
-    <div sec:authorize="isAuthenticated()" class="mt-4">
+
+    <div th:if="${comments.isEmpty()}"
+         class="text-muted">
+        No comments yet.
+    </div>
+
+    <!-- ADD COMMENT -->
+    <div sec:authorize="isAuthenticated()"
+         class="mt-4">
+
         <h5>Add a Comment</h5>
-        <form th:action="@{/action_comment(post=${post.id})}" method="post">
+
+        <form th:action="@{/action_comment(post=${post.id})}"
+              method="post">
+
             <div class="form-group">
-                <textarea name="content" class="form-control" rows="4" required
+                <textarea name="content"
+                          class="form-control"
+                          rows="4"
+                          required
                           placeholder="Write your comment here..."></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Comment</button>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Submit Comment
+            </button>
+
         </form>
+
     </div>
-    <div sec:authorize="!isAuthenticated()" class="mt-4 text-muted">
-        <a th:href="@{/loginform}">Login</a> to post a comment.
+
+    <div sec:authorize="!isAuthenticated()"
+         class="mt-4 text-muted">
+
+        <a th:href="@{/loginform}">
+            Login
+        </a>
+        to post a comment.
+
     </div>
+
 </div>
+
 </body>
 </html>
