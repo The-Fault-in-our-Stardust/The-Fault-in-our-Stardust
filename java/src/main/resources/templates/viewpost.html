@@ -18,6 +18,27 @@
     <div class="card mb-4">
         <div class="card-body" th:text="${post.content}">Content here</div>
     </div>
+    <div sec:authorize="isAuthenticated()" class="mb-4">
+    <form th:action="@{/posts/{postId}/react(postId=${post.id})}" method="post" class="d-flex gap-2">
+
+        <button type="submit" name="type" value="LIKE" class="btn btn-light">
+            👍
+        </button>
+
+        <button type="submit" name="type" value="DISLIKE" class="btn btn-light">
+            👎
+        </button>
+
+        <button type="submit" name="type" value="LOVE" class="btn btn-light">
+            ❤️
+        </button>
+
+        <button type="submit" name="type" value="LAUGH" class="btn btn-light">
+            😂
+        </button>
+
+    </form>
+    </div>
     <h5>Comments (<span th:text="${#lists.size(comments)}">0</span>)</h5>
     <div th:each="comment : ${comments}" class="comment-block">
         <p th:text="${comment.content}">Comment content</p>
