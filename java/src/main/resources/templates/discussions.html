@@ -15,8 +15,8 @@
         <p>Join the conversation and connect with the community.</p>
     </div>
 
-    <div th:if="${posts.isEmpty()}" class="text-muted">
-        No discussions yet.
+   <div th:if="${posts == null or #lists.isEmpty(posts)}" class="text-muted">
+    No discussions yet.
     </div>
 
     <div th:each="post : ${posts}" class="discussion-card">
