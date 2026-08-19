@@ -1,6 +1,10 @@
 package com.zipcode.stardust.config;
 
+import com.zipcode.stardust.model.Bird;
+import com.zipcode.stardust.model.Species;
 import com.zipcode.stardust.model.Subforum;
+import com.zipcode.stardust.repository.BirdRepository;
+import com.zipcode.stardust.repository.SpeciesRepository;
 import com.zipcode.stardust.repository.SubforumRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -12,6 +16,13 @@ public class DataInitializer implements ApplicationRunner {
 
     @Autowired
     private SubforumRepository subforumRepository;
+
+     @Autowired
+    private SpeciesRepository speciesRepository;
+
+     @Autowired
+    private BirdRepository birdRepository;
+
 
     @Override
     public void run(ApplicationArguments args) {
@@ -35,6 +46,26 @@ public class DataInitializer implements ApplicationRunner {
             Subforum other = new Subforum("Other",
                     "Discuss other things here", null);
             subforumRepository.save(other);
+        }
+
+        if (speciesRepository.count() == 0) {
+            Species cardinalSpecies = new Species("Cardinalidae",
+                "A family of passerine birds found in North and South America.");
+            speciesRepository.save(cardinalSpecies);
+
+            Species corvidSpecies = new Species("Corvidae",
+                "A family of birds that includes crows, ravens, and jays.");
+            speciesRepository.save(corvidSpecies);
+
+            Bird cardinal = new Bird("Northern Cardinal",
+                "A mid-sized songbird with a distinctive crest and, in males, vivid red plumage.",
+                cardinalSpecies);
+            birdRepository.save(cardinal);
+
+            Bird crow = new Bird("American Crow",
+                "A large, all-black bird known for its intelligence and adaptability.",
+                corvidSpecies);
+            birdRepository.save(crow);
         }
     }
 }

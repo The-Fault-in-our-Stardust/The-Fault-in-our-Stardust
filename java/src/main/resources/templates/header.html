@@ -7,6 +7,8 @@
         <a class="navbar-brand" th:href="@{/}" th:text="${siteName}">Schooner</a>
         <div class="navbar-nav flex-row">
             <a class="nav-link text-white mr-3" th:href="@{/}">Subforum Index</a>
+            <a href="/wiki/species/1">Species</a>
+            <a href="/wiki/bird/1">Birds</a>
             <span sec:authorize="isAuthenticated()">
                 <span class="text-white mr-2" th:text="'Hello, ' + ${currentUser}">Hello, user</span>
                 <form th:action="@{/action_logout}" method="post" class="d-inline">
