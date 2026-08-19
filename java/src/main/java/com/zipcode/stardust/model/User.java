@@ -35,6 +35,9 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column
+    private String avatar;
+
     @Column(nullable = false)
     private boolean admin = false;
 
@@ -96,6 +99,8 @@ public class User implements UserDetails {
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
     public boolean isAdmin() { return admin; }
     public void setAdmin(boolean admin) { this.admin = admin; }
     public List<Post> getPosts() { return posts; }

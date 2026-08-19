@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="~{layout :: head('My Account')}"></head>
+
+<body>
+
+<div th:replace="~{header :: header}"></div>
+
+<div class="container mt-4">
+
+    <h2>My Account</h2>
+
+    <div class="card mt-3">
+        <div class="card-body">
+
+           <div th:if="${accountUser.avatar != null}" class="mb-3">
+        <img th:src="@{'/' + ${accountUser.avatar}}"
+         alt="Bird Avatar"
+         width="150">
+</div>
+           
+            <h4>Profile</h4>
+
+            <p>
+                <strong>Username:</strong>
+                <span th:text="${accountUser.username}">Username</span>
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                <span th:text="${accountUser.email}">Email</span>
+            </p>
+
+            <a th:href="@{/avatar}" class="btn btn-primary">
+            Choose Bird Avatar
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
