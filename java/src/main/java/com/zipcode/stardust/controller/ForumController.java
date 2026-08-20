@@ -23,6 +23,7 @@ import com.zipcode.stardust.repository.PostRepository;
 import com.zipcode.stardust.repository.SubforumRepository;
 import com.zipcode.stardust.repository.UserRepository;
 import com.zipcode.stardust.service.ForumService;
+import com.zipcode.stardust.service.UsernameGenerator;
 
 @Controller
 public class ForumController {
@@ -33,6 +34,7 @@ public class ForumController {
     @Autowired private UserRepository userRepository;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private ForumService forumService;
+    @Autowired private UsernameGenerator usernameGenerator;
 
     @Value("${site.name:Schooner}")
     private String siteName;
@@ -108,6 +110,24 @@ public String userPage(Model model, Authentication auth) {
     model.addAttribute("accountUser", user);
     return "user";
 }
+
+@PostMapping("/generate-username")
+public String generateUsername(Authentication auth) {
+
+    User user = getCurrentUser(auth);
+
+    if (user == null) {
+        return "redirect:/loginform";
+    }
+
+    String newUsername = usernameGenerator.generateUsername();
+
+    user.setUsername(newUsername);
+    userRepository.save(user);
+
+    return "redirect:/user";
+}
+
 @GetMapping("/avatar")
 public String avatarPage(Model model, Authentication auth) {
     addCommonAttributes(model, auth);
