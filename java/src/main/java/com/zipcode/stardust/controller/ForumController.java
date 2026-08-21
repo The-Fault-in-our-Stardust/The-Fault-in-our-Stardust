@@ -28,7 +28,6 @@ import com.zipcode.stardust.repository.SubforumRepository;
 import com.zipcode.stardust.repository.UserRepository;
 import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.MarkdownService;
-import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.UsernameGenerator;
 
 @Controller
@@ -44,7 +43,7 @@ public class ForumController {
     @Autowired private ForumService forumService;
     @Autowired private UsernameGenerator usernameGenerator;
 
-    @Value("${site.name:Schooner}")
+    @Value("${site.name:Bye Bye Birdie}")
     private String siteName;
 
     @Value("${site.description:a schooner forum}")
