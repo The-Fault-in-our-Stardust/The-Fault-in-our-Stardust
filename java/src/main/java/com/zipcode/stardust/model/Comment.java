@@ -36,6 +36,10 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+
     private static final int DAYS_PER_MONTH = 30;
     private static final long CACHE_TTL_SECONDS = 30;
 
@@ -90,4 +94,6 @@ public class Comment {
     public void setUser(User user) { this.user = user; }
     public Post getPost() { return post; }
     public void setPost(Post post) { this.post = post; }
+    public boolean isDeleted() { return deleted; }
+    public void setDeleted(boolean deleted) { this.deleted = deleted; }
 }

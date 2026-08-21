@@ -45,6 +45,9 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
     private static final int DAYS_PER_MONTH = 30;
     private static final long CACHE_TTL_SECONDS = 30;
 
@@ -100,6 +103,8 @@ public class Post {
     public void setUser(User user) { this.user = user; }
     public Subforum getSubforum() { return subforum; }
     public void setSubforum(Subforum subforum) { this.subforum = subforum; }
+    public boolean isDeleted() { return deleted; }
+    public void setDeleted(boolean deleted) { this.deleted = deleted; }
     public LocalDateTime getPostdate() { return postdate; }
     public void setPostdate(LocalDateTime postdate) { this.postdate = postdate; }
     public List<Comment> getComments() { return comments; }
