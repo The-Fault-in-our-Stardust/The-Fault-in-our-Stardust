@@ -492,7 +492,7 @@ public String chooseAvatar(@RequestParam String avatar,
         // -------------------------
 
         List<Comment> comments =
-                commentRepository.findByPostOrderByPostdateAsc(p);
+        commentRepository.findByPostAndDeletedFalseOrderByPostdateAsc(p);
 
         // -------------------------
         // COMMENT REACTION COUNTS
@@ -594,7 +594,7 @@ public String chooseAvatar(@RequestParam String avatar,
         );
 
         return "viewpost";
-    }
+    } //end view post
 
     // =========================
     // ADD COMMENT
@@ -629,6 +629,43 @@ public String chooseAvatar(@RequestParam String avatar,
         commentRepository.save(comment);
 
         return "redirect:/viewpost?post=" + post;
+    }
+
+        // =========================
+    // DELETE COMMENT
+    // =========================
+
+    @PostMapping("/action_deletecomment")
+    public String deleteComment(
+            @RequestParam Long comment,
+            Authentication auth) {
+
+        User user = getCurrentUser(auth);
+
+        if (user == null) {
+            return "redirect:/loginform";
+        }
+
+        Optional<Comment> opt = commentRepository.findById(comment);
+
+        if (opt.isEmpty()) {
+            return "redirect:/";
+        }
+
+        Comment c = opt.get();
+
+        boolean isOwner = c.getUser().getId().equals(user.getId());
+        boolean isModerator = user.getRole() == Role.MODERATOR
+                || user.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isModerator) {
+            return "redirect:/viewpost?post=" + c.getPost().getId();
+        }
+
+        c.setDeleted(true);
+        commentRepository.save(c);
+
+        return "redirect:/viewpost?post=" + c.getPost().getId();
     }
 
     // =========================
