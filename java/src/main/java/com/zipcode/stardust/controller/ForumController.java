@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.zipcode.stardust.model.Comment;
 import com.zipcode.stardust.model.Post;
 import com.zipcode.stardust.model.ReactionType;
+import com.zipcode.stardust.model.Role;
 import com.zipcode.stardust.model.Subforum;
 import com.zipcode.stardust.model.User;
 import com.zipcode.stardust.repository.CommentRepository;
@@ -36,6 +37,7 @@ import com.zipcode.stardust.repository.UserRepository;
 import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.MarkdownService;
 import com.zipcode.stardust.service.UsernameGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 public class ForumController {
@@ -88,6 +90,41 @@ public class ForumController {
         }
     }
 
+    @PostMapping("/action_deletepost")
+    public String deletePost(
+            @RequestParam Long post,
+            Authentication auth) {
+
+        User user = getCurrentUser(auth);
+
+        if (user == null) {
+            return "redirect:/loginform";
+        }
+
+        Optional<Post> opt = postRepository.findById(post);
+
+        if (opt.isEmpty()) {
+            return "redirect:/";
+        }
+
+        Post p = opt.get();
+
+        boolean isOwner = p.getUser().getId().equals(user.getId());
+        boolean isModerator = user.getRole() == Role.MODERATOR
+                || user.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isModerator) {
+            return "redirect:/viewpost?post=" + post;
+        }
+
+        Long subforumId = p.getSubforum().getId();
+
+        p.setDeleted(true);
+        postRepository.save(p);
+
+        return "redirect:/subforum?sub=" + subforumId;
+    }
+
     // =========================
     // HOME PAGE
     // =========================
@@ -118,8 +155,8 @@ public class ForumController {
 
         addCommonAttributes(model, auth);
 
-        List<Post> posts =
-                postRepository.findAllByOrderByPostdateDesc();
+        List<Post> posts = 
+                postRepository.findByDeletedFalseOrderByPostdateDesc();
 
         model.addAttribute("posts", posts);
 
@@ -148,7 +185,7 @@ public class ForumController {
         Subforum sf = opt.get();
 
         List<Post> posts =
-                postRepository.findBySubforumOrderByPostdateDesc(sf);
+                postRepository.findBySubforumAndDeletedFalseOrderByPostdateDesc(sf);
 
         List<Subforum> children =
                 subforumRepository.findByParent(sf);
@@ -510,7 +547,14 @@ if (imageFile != null && !imageFile.isEmpty()) {
 
         Post p = opt.get();
 
+        if (p.isDeleted()) {
+            model.addAttribute("postDeleted", true);
+            model.addAttribute("post", p);
+            return "viewpost";
+        }
+
         // Convert Markdown into HTML
+
         String renderedContent =
                 markdownService.toHtml(p.getContent());
 
@@ -547,7 +591,7 @@ if (imageFile != null && !imageFile.isEmpty()) {
         // -------------------------
 
         List<Comment> comments =
-                commentRepository.findByPostOrderByPostdateAsc(p);
+        commentRepository.findByPostAndDeletedFalseOrderByPostdateAsc(p);
 
         // -------------------------
         // COMMENT REACTION COUNTS
@@ -649,7 +693,7 @@ if (imageFile != null && !imageFile.isEmpty()) {
         );
 
         return "viewpost";
-    }
+    } //end view post
 
     // =========================
     // ADD COMMENT
@@ -684,6 +728,43 @@ if (imageFile != null && !imageFile.isEmpty()) {
         commentRepository.save(comment);
 
         return "redirect:/viewpost?post=" + post;
+    }
+
+        // =========================
+    // DELETE COMMENT
+    // =========================
+
+    @PostMapping("/action_deletecomment")
+    public String deleteComment(
+            @RequestParam Long comment,
+            Authentication auth) {
+
+        User user = getCurrentUser(auth);
+
+        if (user == null) {
+            return "redirect:/loginform";
+        }
+
+        Optional<Comment> opt = commentRepository.findById(comment);
+
+        if (opt.isEmpty()) {
+            return "redirect:/";
+        }
+
+        Comment c = opt.get();
+
+        boolean isOwner = c.getUser().getId().equals(user.getId());
+        boolean isModerator = user.getRole() == Role.MODERATOR
+                || user.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isModerator) {
+            return "redirect:/viewpost?post=" + c.getPost().getId();
+        }
+
+        c.setDeleted(true);
+        commentRepository.save(c);
+
+        return "redirect:/viewpost?post=" + c.getPost().getId();
     }
 
     // =========================

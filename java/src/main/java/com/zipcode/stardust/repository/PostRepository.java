@@ -9,7 +9,11 @@ import com.zipcode.stardust.model.Subforum;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findBySubforumOrderByPostdateDesc(Subforum subforum);
+    // List<Post> findBySubforumOrderByPostdateDesc(Subforum subforum);
 
-    List<Post> findAllByOrderByPostdateDesc();
+    // List<Post> findAllByOrderByPostdateDesc();
+
+    List<Post> findBySubforumAndDeletedFalseOrderByPostdateDesc(Subforum subforum);
+
+    List<Post> findByDeletedFalseOrderByPostdateDesc(); 
 }
