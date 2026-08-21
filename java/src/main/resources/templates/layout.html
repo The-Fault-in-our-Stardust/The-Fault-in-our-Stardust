@@ -1,20 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
 <head th:fragment="head(title)">
+
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <title th:text="${title} + ' - ' + ${siteName}">Page - Schooner</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"/>
+
+    <title th:text="${title} + ' - ' + ${siteName}">
+        Bye Bye Birdie
+    </title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
-    <link rel="stylesheet" th:href="@{/style.css}"/>
+
+    <!-- Bye Bye Birdie Fonts -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com"/>
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin/>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Quicksand:wght@400;500;600;700&display=swap"/>
+
+    <!-- Bye Bye Birdie Custom Styles -->
+    <link rel="stylesheet"
+          type="text/css"
+          th:href="@{/style.css}"
+          href="/style.css"/>
+
 </head>
+
 <body>
-<div th:fragment="layout(title, content)">
+
+<div th:fragment="layout(title, content)"
+     class="site-wrapper">
+
+    <!-- HEADER -->
     <div th:replace="~{header :: header}"></div>
-    <div class="container mt-4">
-        <div th:replace="${content}"></div>
-    </div>
+
+    <!-- PAGE CONTENT -->
+    <main class="site-main">
+        <div class="site-container">
+            <div th:replace="${content}"></div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <div th:replace="~{footer :: footer}"></div>
+
 </div>
+
 </body>
+
 </html>

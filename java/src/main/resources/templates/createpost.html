@@ -1,30 +1,137 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<head th:replace="~{layout :: head('Create Post')}" ></head>
+
+<head th:replace="~{layout :: head('Create Post')}"></head>
+
 <body>
+
 <div th:replace="~{header :: header}"></div>
+
 <div class="container mt-4">
-    <h2>Create Post in <span th:text="${subforum.title}">Forum</span></h2>
-    <div th:if="${!errors.isEmpty()}" class="alert alert-danger">
+
+    <h2>
+        Create Post in
+        <span th:text="${subforum.title}">Forum</span>
+    </h2>
+
+
+    <!-- ERRORS -->
+    <div th:if="${!errors.isEmpty()}"
+         class="alert alert-danger">
+
         <ul class="mb-0">
-            <li th:each="err : ${errors}" th:text="${err}">Error</li>
+
+            <li th:each="err : ${errors}"
+                th:text="${err}">
+                Error
+            </li>
+
         </ul>
+
     </div>
-    <form th:action="@{/action_post(sub=${subforum.id})}" method="post">
+
+
+    <!-- CREATE POST FORM -->
+    <form th:action="@{/action_post(sub=${subforum.id})}"
+          method="post"
+          enctype="multipart/form-data">
+
+
+        <!-- TITLE -->
         <div class="form-group">
-            <label>Title</label>
-            <input type="text" name="title" class="form-control" required
-                   minlength="5" maxlength="139"/>
+
+            <label for="title">
+                Title
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                class="form-control"
+                required
+                minlength="5"
+                maxlength="139"/>
+
         </div>
+
+
+        <!-- CONTENT -->
         <div class="form-group">
-            <label>Content</label>
-            <textarea name="content" class="form-control" rows="8" required
-                      minlength="11" maxlength="4999"></textarea>
+
+            <label for="content">
+                Content
+            </label>
+
+            <textarea
+                id="content"
+                name="content"
+                class="form-control"
+                rows="8"
+                required
+                minlength="11"
+                maxlength="4999"></textarea>
+
         </div>
-        <button type="submit" class="btn btn-primary">Post</button>
-        <a th:href="@{/subforum(sub=${subforum.id})}" class="btn btn-secondary ml-2">Cancel</a>
+
+
+        <!-- IMAGE UPLOAD -->
+        <div class="form-group">
+
+            <label for="imageFile">
+                Add an Image
+            </label>
+
+            <div class="image-upload-zone">
+
+                <input
+                    type="file"
+                    id="imageFile"
+                    name="imageFile"
+                    accept="image/*"
+                    class="image-upload-input"/>
+
+                <div class="image-upload-content">
+
+                    <p class="upload-title">
+                        Drag and drop an image here
+                    </p>
+
+                    <p class="upload-subtext">
+                        or click to choose a file
+                    </p>
+
+                    <p class="upload-file-types">
+                        JPG, PNG, GIF, or WEBP
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+        <div class="post-form-actions">
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Post
+            </button>
+
+            <a th:href="@{/subforum(sub=${subforum.id})}"
+               class="btn btn-secondary ml-2">
+                Cancel
+            </a>
+
+        </div>
+
     </form>
+
 </div>
+
 </body>
+
 </html>
