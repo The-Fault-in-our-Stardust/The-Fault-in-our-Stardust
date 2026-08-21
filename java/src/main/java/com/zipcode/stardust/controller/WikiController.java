@@ -1,6 +1,9 @@
 package com.zipcode.stardust.controller;
 
 
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -29,6 +32,27 @@ public class WikiController {
         this.birdRepository = birdRepository;
         this.speciesRepository = speciesRepository;
     }
+
+   @GetMapping("/species")
+        public String getSpeciesDirectory(Model model) {
+            List<Species> allSpecies = speciesRepository.findAll();
+            model.addAttribute("title", "Species");
+            model.addAttribute("urlSegment", "species");
+            model.addAttribute("itemType", "species");
+            model.addAttribute("items", allSpecies);
+            return "directory";
+        }
+
+@GetMapping("/bird")
+    public String getBirdDirectory(Model model) {
+        List<Bird> allBirds = birdRepository.findAll();
+        model.addAttribute("title", "Birds");
+        model.addAttribute("urlSegment", "bird");
+        model.addAttribute("itemType", "bird");
+        model.addAttribute("items", allBirds);
+        return "directory";
+    }
+
 
     @GetMapping("/bird/{id}")
     public String getBird(@PathVariable Long id, Model model) {

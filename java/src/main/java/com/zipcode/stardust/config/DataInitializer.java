@@ -1,15 +1,22 @@
 package com.zipcode.stardust.config;
 
 import com.zipcode.stardust.model.Bird;
+import com.zipcode.stardust.model.Role;
 import com.zipcode.stardust.model.Species;
 import com.zipcode.stardust.model.Subforum;
+import com.zipcode.stardust.model.User;
 import com.zipcode.stardust.repository.BirdRepository;
 import com.zipcode.stardust.repository.SpeciesRepository;
 import com.zipcode.stardust.repository.SubforumRepository;
+import com.zipcode.stardust.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class DataInitializer implements ApplicationRunner {
@@ -23,9 +30,35 @@ public class DataInitializer implements ApplicationRunner {
      @Autowired
     private BirdRepository birdRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Value("${STARDUST_ADMIN_EMAIL:}")
+    private String adminEmail;
+
+    @Value("${STARDUST_ADMIN_USERNAME:}")
+    private String adminUsername;
+
+    @Value("${STARDUST_ADMIN_PASSWORD:}")
+    private String adminPassword;
+
 
     @Override
     public void run(ApplicationArguments args) {
+     if (userRepository.count() == 0) {
+        if (adminEmail.isEmpty() || adminUsername.isEmpty() || adminPassword.isEmpty()) {
+                System.out.println("Skipping admin seed: missing one or more of " +
+                "STARDUST_ADMIN_EMAIL, STARDUST_ADMIN_USERNAME, STARDUST_ADMIN_PASSWORD");
+        } else {
+                User admin = new User(adminEmail, adminUsername, adminPassword, passwordEncoder);
+                admin.setRole(Role.ADMIN);
+                userRepository.save(admin);
+        }
+        }
+        
         if (subforumRepository.count() == 0) {
             Subforum forum = new Subforum("Forum",
                     "Announcements, bug reports, and general discussion about the forum belongs here", null);

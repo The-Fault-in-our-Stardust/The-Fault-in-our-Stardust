@@ -20,8 +20,8 @@
                th:href="@{/}">
                 Subforum Index
             </a>
-            <a href="/wiki/species/1">Species</a>
-            <a href="/wiki/bird/1">Birds</a>
+            <a class="nav-link text-white mr-3" th:href="@{/wiki/species}">Species</a>
+            <a class="nav-link text-white mr-3" th:href="@{/wiki/bird}">Birds</a>
           <!-- Options for logged-in users -->
           <span sec:authorize="isAuthenticated()">
 
