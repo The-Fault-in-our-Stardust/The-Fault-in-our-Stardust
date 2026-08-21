@@ -18,8 +18,11 @@
         </ol>
     </nav>
 
-    <h2 th:text="${post.title}">Post Title</h2>
-
+    <h2 class="post-title"
+    th:text="${post.title}">
+    Post Title
+    </h2>
+    
     <p class="text-muted">
         Posted by
         <strong th:text="${post.user.username}">author</strong>
@@ -28,12 +31,25 @@
     </p>
 
     <div class="card mb-4">
-        <div class="card-body"
-             th:utext="${renderedContent}">
-            Content here
-        </div>
+
+    <div class="card-body"
+         th:utext="${renderedContent}">
+        Content here
     </div>
 
+    <!-- POST IMAGE -->
+    <div th:if="${post.imagePath != null and !post.imagePath.isEmpty()}"
+         class="post-image-wrapper">
+
+        <img
+            th:src="${post.imagePath}"
+            alt="Post image"
+            class="post-image">
+
+        </div>
+
+    </div>
+    
     <!-- POST REACTIONS -->
     <div sec:authorize="isAuthenticated()" class="mb-4">
 

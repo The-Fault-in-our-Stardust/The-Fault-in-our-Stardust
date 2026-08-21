@@ -16,65 +16,93 @@
                 src="/images/birdielogo.png"
                 alt="Bye Bye Birdie logo"
                 class="site-logo"
-        />
+            />
 
         </a>
 
 
-        <!-- MAIN NAVIGATION -->
-        <div class="site-nav">
+        <!-- RIGHT SIDE OF HEADER -->
+        <div class="header-right">
 
-            <a class="site-nav-link"
-               th:href="@{/subforum(sub=4)}">
-                Discussions
-            </a>
+            <!-- SOCIAL MEDIA -->
+            <div class="social-links">
 
-            <a class="site-nav-link"
-               th:href="@{/wiki/species}">
-                Species
-            </a>
+        <a href="#"
+       aria-label="Instagram"
+       target="_blank">
+        <i class="bi bi-instagram"></i>
+        </a>
 
-            <a class="site-nav-link"
-               th:href="@{/wiki/bird}">
-                Birds
-            </a>
+        <a href="#"
+       aria-label="Facebook"
+       target="_blank">
+        <i class="bi bi-facebook"></i>
+    </a>
 
+        <a href="#"
+       aria-label="X / Twitter"
+       target="_blank">
+        <i class="bi bi-twitter-x"></i>
+    </a>
 
-            <!-- LOGGED-IN USER OPTIONS -->
-            <div sec:authorize="isAuthenticated()"
-                 class="user-nav">
+</div>
+
+            <!-- MAIN NAVIGATION -->
+            <div class="site-nav">
 
                 <a class="site-nav-link"
-                   th:href="@{/user}">
-                    Profile
+                   th:href="@{/subforum(sub=4)}">
+                    Discussions
                 </a>
 
-                <span class="user-greeting"
-                      th:text="'Hello, ' + ${currentUser}">
-                    Hello, user
-                </span>
-
-                <form th:action="@{/action_logout}"
-                      method="post"
-                      class="logout-form">
-
-                    <button type="submit"
-                            class="logout-button">
-                        Logout
-                    </button>
-
-                </form>
-
-            </div>
-
-
-            <!-- LOGGED-OUT USER OPTIONS -->
-            <div sec:authorize="!isAuthenticated()">
-
-                <a class="login-button"
-                   th:href="@{/loginform}">
-                    Login / Register
+                <a class="site-nav-link"
+                   th:href="@{/wiki/species}">
+                    Species
                 </a>
+
+                <a class="site-nav-link"
+                   th:href="@{/wiki/bird}">
+                    Birds
+                </a>
+
+
+                <!-- LOGGED-IN USER OPTIONS -->
+                <div sec:authorize="isAuthenticated()"
+                     class="user-nav">
+
+                    <a class="site-nav-link"
+                       th:href="@{/user}">
+                        Profile
+                    </a>
+
+                    <span class="user-greeting"
+                          th:text="'Hello, ' + ${currentUser}">
+                        Hello, user
+                    </span>
+
+                    <form th:action="@{/action_logout}"
+                          method="post"
+                          class="logout-form">
+
+                        <button type="submit"
+                                class="logout-button">
+                            Logout
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- LOGGED-OUT USER OPTIONS -->
+                <div sec:authorize="!isAuthenticated()">
+
+                    <a class="login-button"
+                       th:href="@{/loginform}">
+                        Login / Register
+                    </a>
+
+                </div>
 
             </div>
 

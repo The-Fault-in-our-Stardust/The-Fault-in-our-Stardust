@@ -30,6 +30,8 @@ public class Post {
 
     @Column(nullable = false, length = 5000)
     private String content;
+    
+    private String imagePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -61,7 +63,14 @@ public class Post {
         this.user = user;
         this.subforum = subforum;
         this.postdate = LocalDateTime.now();
-    }
+        }
+        public String getImagePath() {
+        return imagePath;
+        }
+
+        public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+        }
 
     public String getTimeString() {
         LocalDateTime now = LocalDateTime.now();

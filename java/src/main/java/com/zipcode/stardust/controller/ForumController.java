@@ -1,10 +1,16 @@
 package com.zipcode.stardust.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.zipcode.stardust.model.Comment;
 import com.zipcode.stardust.model.Post;
@@ -334,6 +341,7 @@ public String chooseAvatar(@RequestParam String avatar,
             @RequestParam Long sub,
             @RequestParam String title,
             @RequestParam String content,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
             Model model,
             Authentication auth) {
 
@@ -376,13 +384,105 @@ public String chooseAvatar(@RequestParam String avatar,
 
         User user = getCurrentUser(auth);
 
-        Post post =
-                new Post(
-                        title,
-                        content,
-                        user,
-                        opt.get()
-                );
+      Post post =
+        new Post(
+                title,
+                content,
+                user,
+                opt.get()
+        );
+
+        // Save uploaded image if one was provided
+        if (imageFile != null && !imageFile.isEmpty()) {
+
+    try {
+
+        // Use an absolute uploads directory
+        Path uploadDir = Paths.get("uploads").toAbsolutePath();
+
+        // Create it if it does not exist
+        Files.createDirectories(uploadDir);
+
+        String originalFilename = imageFile.getOriginalFilename();
+
+        String extension = "";
+
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(
+                    originalFilename.lastIndexOf(".")
+            );
+        }
+
+        String fileName = UUID.randomUUID() + extension;
+
+        Path filePath = uploadDir.resolve(fileName);
+
+        // Save the uploaded image
+        Files.copy(
+                imageFile.getInputStream(),
+                filePath,
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+        );
+
+        // Save the browser-accessible path in the database
+        post.setImagePath("/uploads/" + fileName);
+
+    } catch (IOException e) {
+
+        // TEMPORARY: show us the real problem in the terminal
+        e.printStackTrace();
+
+        errors.add("There was a problem uploading the image.");
+
+        model.addAttribute("subforum", opt.get());
+        model.addAttribute("errors", errors);
+
+        return "createpost";
+    }
+
+}
+if (imageFile != null && !imageFile.isEmpty()) {
+
+    try {
+
+        Path uploadDir = Paths.get("uploads").toAbsolutePath();
+
+        Files.createDirectories(uploadDir);
+
+        String originalFilename = imageFile.getOriginalFilename();
+
+        String extension = "";
+
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(
+                    originalFilename.lastIndexOf(".")
+            );
+        }
+
+        String fileName = UUID.randomUUID() + extension;
+
+        Path filePath = uploadDir.resolve(fileName);
+
+        Files.copy(
+                imageFile.getInputStream(),
+                filePath,
+                StandardCopyOption.REPLACE_EXISTING
+        );
+
+        post.setImagePath("/uploads/" + fileName);
+
+    } catch (IOException e) {
+
+        e.printStackTrace();
+
+        errors.add("There was a problem uploading the image.");
+
+        model.addAttribute("subforum", opt.get());
+        model.addAttribute("errors", errors);
+
+        return "createpost";
+    }
+}
 
         postRepository.save(post);
 
