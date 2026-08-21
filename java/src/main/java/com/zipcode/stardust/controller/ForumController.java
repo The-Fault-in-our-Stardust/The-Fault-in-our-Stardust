@@ -184,6 +184,7 @@ public class ForumController {
         return "login";
     }
 
+    //user stuff?
     @GetMapping("/user")
 public String userPage(Model model, Authentication auth) {
     addCommonAttributes(model, auth);
