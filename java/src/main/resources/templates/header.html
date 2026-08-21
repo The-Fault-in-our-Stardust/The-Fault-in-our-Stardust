@@ -15,15 +15,15 @@
         </a>
 
         <div class="navbar-nav flex-row">
-
-            <!-- Subforum Index -->
+          <!-- Subforum Index -->
             <a class="nav-link text-white mr-3"
                th:href="@{/}">
                 Subforum Index
             </a>
-
-            <!-- Options for logged-in users -->
-            <span sec:authorize="isAuthenticated()">
+            <a href="/wiki/species/1">Species</a>
+            <a href="/wiki/bird/1">Birds</a>
+          <!-- Options for logged-in users -->
+          <span sec:authorize="isAuthenticated()">
 
                 <!-- Go to User -->
                 <a class="nav-link text-white mr-3 d-inline"

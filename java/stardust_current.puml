@@ -1,0 +1,269 @@
+@startuml stardust_current
+
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+
+title Stardust — Current Consolidated UML (as of tonight)
+note as N1
+  Person B's feature (gallery) not yet merged —
+  scope unconfirmed as of this snapshot.
+end note
+
+class StardustApplication {
+  +main(args: String[]): void
+}
+
+class ForumController {
+  -subforumRepository: SubforumRepository
+  -postRepository: PostRepository
+  -commentRepository: CommentRepository
+  -userRepository: UserRepository
+  -passwordEncoder: PasswordEncoder
+  -forumService: ForumService
+  -siteName: String
+  -siteDescription: String
+  -getCurrentUser(auth: Authentication): User
+  -addCommonAttributes(model: Model, auth: Authentication): void
+  +index(model: Model, auth: Authentication): String
+  +subforum(sub: Long, model: Model, auth: Authentication): String
+  +loginForm(model: Model, auth: Authentication, error: String): String
+  +createAccount(username: String, password: String, email: String, model: Model, auth: Authentication): String
+  +addPostForm(sub: Long, model: Model, auth: Authentication): String
+  +createPost(sub: Long, title: String, content: String, model: Model, auth: Authentication): String
+  +viewPost(post: Long, model: Model, auth: Authentication): String
+  +addComment(post: Long, content: String, auth: Authentication): String
+  +addCommentGet(post: Long): String
+}
+
+class ForumService {
+  -subforumRepository: SubforumRepository
+  -userRepository: UserRepository
+  +generateLinkPath(subforumId: Long): String
+  +escapeHtml(text: String): String
+  +validTitle(title: String): boolean
+  +validContent(content: String): boolean
+  +validUsername(username: String): boolean
+  +validPassword(password: String): boolean
+  +usernameTaken(username: String): boolean
+  +emailTaken(email: String): boolean
+}
+
+class SecurityConfig {
+  -userRepository: UserRepository
+  +passwordEncoder(): PasswordEncoder
+  +userDetailsService(): UserDetailsService
+  +filterChain(http: HttpSecurity): SecurityFilterChain
+}
+
+class DataInitializer {
+  -subforumRepository: SubforumRepository
+  +run(args: ApplicationArguments): void
+}
+
+interface CommentRepository {
+  ~findByPostOrderByPostdateAsc(post: Post): List<Comment>
+}
+
+interface SubforumRepository {
+  ~findByParentIsNull(): List<Subforum>
+  ~findByParent(parent: Subforum): List<Subforum>
+  ~findByTitle(title: String): Optional<Subforum>
+}
+
+interface UserRepository {
+  ~findByUsername(username: String): Optional<User>
+  ~findByEmail(email: String): Optional<User>
+  ~existsByUsername(username: String): boolean
+  ~existsByEmail(email: String): boolean
+}
+
+interface PostRepository {
+  ~findBySubforumOrderByPostdateDesc(subforum: Subforum): List<Post>
+}
+
+class Post {
+  -id: Long
+  -title: String
+  -content: String
+  -user: User
+  -subforum: Subforum
+  -postdate: LocalDateTime
+  -comments: List<Comment> = new ArrayList<>()
+  {static} -DAYS_PER_MONTH: int = 30
+  {static} -CACHE_TTL_SECONDS: long = 30
+  -timeCache: TimeCache
+  +Post()
+  +Post(title: String, content: String, user: User, subforum: Subforum)
+  +getTimeString(): String
+  +getId(): Long
+  +setId(id: Long): void
+  +getTitle(): String
+  +setTitle(title: String): void
+  +getContent(): String
+  +setContent(content: String): void
+  +getUser(): User
+  +setUser(user: User): void
+  +getSubforum(): Subforum
+  +setSubforum(subforum: Subforum): void
+  +getPostdate(): LocalDateTime
+  +setPostdate(postdate: LocalDateTime): void
+  +getComments(): List<Comment>
+  +setComments(comments: List<Comment>): void
+}
+
+class Comment {
+  -id: Long
+  -content: String
+  -postdate: LocalDateTime
+  -user: User
+  -post: Post
+  {static} -DAYS_PER_MONTH: int = 30
+  {static} -CACHE_TTL_SECONDS: long = 30
+  -timeCache: TimeCache
+  +Comment()
+  +Comment(content: String, user: User, post: Post)
+  +getTimeString(): String
+  +getId(): Long
+  +setId(id: Long): void
+  +getContent(): String
+  +setContent(content: String): void
+  +getPostdate(): LocalDateTime
+  +setPostdate(postdate: LocalDateTime): void
+  +getUser(): User
+  +setUser(user: User): void
+  +getPost(): Post
+  +setPost(post: Post): void
+}
+
+class Subforum {
+  -id: Long
+  -title: String
+  -description: String
+  -parent: Subforum
+  -subforums: List<Subforum> = new ArrayList<>()
+  -posts: List<Post> = new ArrayList<>()
+  -hidden: boolean = false
+  +Subforum()
+  +Subforum(title: String, description: String, parent: Subforum)
+  +getId(): Long
+  +setId(id: Long): void
+  +getTitle(): String
+  +setTitle(title: String): void
+  +getDescription(): String
+  +setDescription(description: String): void
+  +getParent(): Subforum
+  +setParent(parent: Subforum): void
+  +getSubforums(): List<Subforum>
+  +setSubforums(subforums: List<Subforum>): void
+  +getPosts(): List<Post>
+  +setPosts(posts: List<Post>): void
+  +isHidden(): boolean
+  +setHidden(hidden: boolean): void
+}
+
+class User {
+  -id: Long
+  -username: String
+  -passwordHash: String
+  -email: String
+  -admin: boolean = false
+  -posts: List<Post> = new ArrayList<>()
+  -comments: List<Comment> = new ArrayList<>()
+  +User()
+  +User(email: String, username: String, rawPassword: String, encoder: PasswordEncoder)
+  +checkPassword(rawPassword: String, encoder: PasswordEncoder): boolean
+  +getAuthorities(): Collection<? extends GrantedAuthority>
+  +getPassword(): String
+  +getUsername(): String
+  +isAccountNonExpired(): boolean
+  +isAccountNonLocked(): boolean
+  +isCredentialsNonExpired(): boolean
+  +isEnabled(): boolean
+  +getId(): Long
+  +setId(id: Long): void
+  +setUsername(username: String): void
+  +getPasswordHash(): String
+  +setPasswordHash(passwordHash: String): void
+  +getEmail(): String
+  +setEmail(email: String): void
+  +isAdmin(): boolean
+  +setAdmin(admin: boolean): void
+  +getPosts(): List<Post>
+  +setPosts(posts: List<Post>): void
+  +getComments(): List<Comment>
+  +setComments(comments: List<Comment>): void
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+  LOVE
+  LAUGH
+}
+
+class Reaction {
+  -id: Long
+  -type: ReactionType
+  -user: User
+  -post: Post
+  -comment: Comment
+  +getId(): Long
+  +getType(): ReactionType
+}
+
+class Follower {
+  -id: Long
+  -follower: User
+  -following: User
+  -createdAt: LocalDateTime
+  +getId(): Long
+}
+
+class Block {
+  -id: Long
+  -blocker: User
+  -blocked: User
+  -createdAt: LocalDateTime
+  +getId(): Long
+}
+
+' ---- Existing relationships ----
+ForumController ..> CommentRepository
+ForumController ..> PostRepository
+ForumController ..> UserRepository
+ForumController ..> SubforumRepository
+ForumController --> ForumService
+ForumController --> User : uses >
+
+CommentRepository ..> Comment
+SubforumRepository ..> Subforum
+
+ForumService --> SubforumRepository
+ForumService --> UserRepository
+
+SecurityConfig --> UserRepository
+
+Post "0..*" --o "1" User : authored by
+Post "0..*" --o "1" Subforum : posted in
+Post "1" o-- "0..*" Comment : has
+
+Comment "0..*" --o "1" User : authored by
+
+Subforum "1" o-- "0..*" Subforum : parent/children
+
+' ---- Person C's additions ----
+User "1" -- "0..*" Reaction : reacts >
+Reaction "0..*" -- "0..1" Post : on
+Reaction "0..*" -- "0..1" Comment : on
+Reaction --> ReactionType
+
+User "1" -- "0..*" Follower : follower >
+User "1" -- "0..*" Follower : following >
+User "1" -- "0..*" Block : blocker >
+User "1" -- "0..*" Block : blocked >
+
+@enduml
