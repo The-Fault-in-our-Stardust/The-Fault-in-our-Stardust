@@ -21,12 +21,10 @@
          class="alert alert-danger">
 
         <ul class="mb-0">
-
             <li th:each="err : ${errors}"
                 th:text="${err}">
                 Error
             </li>
-
         </ul>
 
     </div>
@@ -36,7 +34,6 @@
     <form th:action="@{/action_post(sub=${subforum.id})}"
           method="post"
           enctype="multipart/form-data">
-
 
         <!-- TITLE -->
         <div class="form-group">
@@ -83,13 +80,14 @@
                 Add an Image
             </label>
 
-            <div class="image-upload-zone">
+            <div id="imageDropZone"
+                 class="image-upload-zone">
 
                 <input
                     type="file"
                     id="imageFile"
                     name="imageFile"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
                     class="image-upload-input"/>
 
                 <div class="image-upload-content">
@@ -107,6 +105,30 @@
                     </p>
 
                 </div>
+
+            </div>
+
+
+            <!-- IMAGE PREVIEW -->
+            <div id="imagePreviewWrapper"
+                 class="image-preview-wrapper"
+                 style="display: none;">
+
+                <img
+                    id="imagePreview"
+                    class="image-preview"
+                    alt="Selected image preview"/>
+
+                <p id="imageFileName"
+                   class="image-file-name">
+                </p>
+
+                <button
+                    type="button"
+                    id="removeImageButton"
+                    class="btn btn-secondary btn-sm">
+                    Remove Image
+                </button>
 
             </div>
 
@@ -131,6 +153,147 @@
     </form>
 
 </div>
+
+
+<!-- DRAG + DROP IMAGE SCRIPT -->
+<script>
+
+    const dropZone =
+        document.getElementById("imageDropZone");
+
+    const fileInput =
+        document.getElementById("imageFile");
+
+    const previewWrapper =
+        document.getElementById("imagePreviewWrapper");
+
+    const preview =
+        document.getElementById("imagePreview");
+
+    const fileName =
+        document.getElementById("imageFileName");
+
+    const removeButton =
+        document.getElementById("removeImageButton");
+
+
+    // Stop browser from opening the image
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+
+        dropZone.addEventListener(eventName, event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+        });
+
+    });
+
+
+    // Highlight drop zone while dragging over it
+    ["dragenter", "dragover"].forEach(eventName => {
+
+        dropZone.addEventListener(eventName, () => {
+
+            dropZone.classList.add("drag-active");
+
+        });
+
+    });
+
+
+    // Remove highlight when leaving or dropping
+    ["dragleave", "drop"].forEach(eventName => {
+
+        dropZone.addEventListener(eventName, () => {
+
+            dropZone.classList.remove("drag-active");
+
+        });
+
+    });
+
+
+    // Handle desktop drag and drop
+    dropZone.addEventListener("drop", event => {
+
+        const files = event.dataTransfer.files;
+
+        if (files.length === 0) {
+            return;
+        }
+
+        const selectedFile = files[0];
+
+        if (!selectedFile.type.startsWith("image/")) {
+
+            alert("Please select an image file.");
+
+            return;
+        }
+
+        // Put the dropped file into the actual file input
+        fileInput.files = files;
+
+        showPreview(selectedFile);
+
+    });
+
+
+    // Handle normal click/file picker
+    fileInput.addEventListener("change", () => {
+
+        if (fileInput.files.length > 0) {
+
+            showPreview(
+                fileInput.files[0]
+            );
+
+        }
+
+    });
+
+
+    // Show selected image before posting
+    function showPreview(selectedFile) {
+
+        const reader = new FileReader();
+
+        reader.onload = event => {
+
+            preview.src =
+                event.target.result;
+
+            fileName.textContent =
+                selectedFile.name;
+
+            previewWrapper.style.display =
+                "block";
+
+        };
+
+        reader.readAsDataURL(
+            selectedFile
+        );
+
+    }
+
+
+    // Remove selected image
+    removeButton.addEventListener("click", () => {
+
+        fileInput.value = "";
+
+        preview.src = "";
+
+        fileName.textContent = "";
+
+        previewWrapper.style.display =
+            "none";
+
+    });
+
+</script>
 
 </body>
 

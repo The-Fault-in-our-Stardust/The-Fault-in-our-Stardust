@@ -201,7 +201,38 @@ a:hover {
     background-color: var(--moss-green);
     color: white;
 }
+/* ========================================
+   HEADER RIGHT SIDE
+======================================== */
 
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Header social icons only */
+.header-right .social-links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.header-right .social-links a {
+    color: var(--sky-teal);
+    font-size: 18px;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.header-right .social-links a:hover,
+.header-right .social-links a:focus {
+    color: var(--forest-green);
+}
 
 /* ========================================
    SUBFORUMS
@@ -258,6 +289,16 @@ a:hover {
     box-shadow: var(--shadow);
 }
 
+/* ========================================
+   POST DETAIL
+======================================== */
+
+.post-title {
+    font-size: 2rem;
+    line-height: 1.25;
+    margin: 0 0 8px;
+    color: var(--forest-green);
+}
 
 /* ========================================
    COMMENTS
@@ -715,6 +756,58 @@ a:hover {
 .post-form-actions {
     margin-top: 20px;
 }
+/* ========================================
+   DRAG + DROP IMAGE PREVIEW
+======================================== */
+
+.image-upload-zone.drag-active {
+    background-color: var(--nest-cream);
+    border-color: var(--forest-green);
+    transform: scale(1.01);
+}
+
+.image-preview-wrapper {
+    margin-top: 16px;
+    padding: 16px;
+    background-color: white;
+    border: 1px solid var(--nest-cream);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.image-preview {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.image-file-name {
+    margin-bottom: 10px;
+    color: var(--charcoal);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ========================================
+   POST IMAGE
+======================================== */
+
+.post-image-wrapper {
+    padding: 0 20px 20px;
+}
+
+.post-image {
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
 
 /* ========================================
    ABOUT SECTION
@@ -782,19 +875,19 @@ a:hover {
 }
 
 .footer-links,
-.social-links {
+.footer-social-links {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
 .footer-links a,
-.social-links a {
+.footer-social-links a {
     color: var(--feather-white);
 }
 
 .footer-links a:hover,
-.social-links a:hover {
+.footer-social-links a:hover {
     color: var(--sunlight-yellow);
 }
 
