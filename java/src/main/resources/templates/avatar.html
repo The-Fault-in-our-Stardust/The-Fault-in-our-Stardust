@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Choose Bird Avatar')}"></head>
+
+<body>
+
+<div th:replace="~{header :: header}"></div>
+
+<div class="container mt-4">
+
+    <h1>Choose Your Bird Avatar</h1>
+
+    <p>Select a bird to use as your profile picture.</p>
+
+    <div class="row">
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="robin.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/robin.png" alt="Robin" width="150">
+                    <br>
+                    Robin
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="bluejay.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/bluejay.png" alt="Blue Jay" width="150">
+                    <br>
+                    Blue Jay
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="finch.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/finch.png" alt="Finch" width="150">
+                    <br>
+                    Finch
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="falcon.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/falcon.png" alt="Falcon" width="150">
+                    <br>
+                    Falcon
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="sparrow.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/sparrow.png" alt="Sparrow" width="150">
+                    <br>
+                    Sparrow
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="cardinal.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/cardinal.png" alt="Cardinal" width="150">
+                    <br>
+                    Cardinal
+                </button>
+            </form>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <form th:action="@{/avatar}" method="post">
+                <input type="hidden" name="avatar" value="owl.png">
+                <button type="submit" class="btn btn-light">
+                    <img src="/owl.png" alt="Owl" width="150">
+                    <br>
+                    Owl
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

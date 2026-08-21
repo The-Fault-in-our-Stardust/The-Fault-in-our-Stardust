@@ -28,33 +28,21 @@ import com.zipcode.stardust.repository.SubforumRepository;
 import com.zipcode.stardust.repository.UserRepository;
 import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.MarkdownService;
+import com.zipcode.stardust.service.ForumService;
+import com.zipcode.stardust.service.UsernameGenerator;
 
 @Controller
 public class ForumController {
-
-    @Autowired
-    private SubforumRepository subforumRepository;
-
-    @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ReactionRepository reactionRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ForumService forumService;
-
     @Autowired
     private MarkdownService markdownService;
+    @Autowired private SubforumRepository subforumRepository;
+    @Autowired private ReactionRepository reactionRepository;
+    @Autowired private PostRepository postRepository;
+    @Autowired private CommentRepository commentRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private ForumService forumService;
+    @Autowired private UsernameGenerator usernameGenerator;
 
     @Value("${site.name:Schooner}")
     private String siteName;
@@ -196,9 +184,65 @@ public class ForumController {
         return "login";
     }
 
-    // =========================
-    // CREATE ACCOUNT
-    // =========================
+    @GetMapping("/user")
+public String userPage(Model model, Authentication auth) {
+    addCommonAttributes(model, auth);
+    User user = getCurrentUser(auth);
+
+    if (user == null) {
+        return "redirect:/loginform";
+    }
+
+    model.addAttribute("accountUser", user);
+    return "user";
+}
+
+@PostMapping("/generate-username")
+public String generateUsername(Authentication auth) {
+
+    User user = getCurrentUser(auth);
+
+    if (user == null) {
+        return "redirect:/loginform";
+    }
+
+    String newUsername = usernameGenerator.generateUsername();
+
+    user.setUsername(newUsername);
+    userRepository.save(user);
+
+    return "redirect:/user";
+}
+
+@GetMapping("/avatar")
+public String avatarPage(Model model, Authentication auth) {
+    addCommonAttributes(model, auth);
+
+    User user = getCurrentUser(auth);
+
+    if (user == null) {
+        return "redirect:/loginform";
+    }
+
+    model.addAttribute("accountUser", user);
+    return "avatar";
+}
+
+@PostMapping("/avatar")
+public String chooseAvatar(@RequestParam String avatar,
+                           Authentication auth) {
+
+    User user = getCurrentUser(auth);
+
+    if (user == null) {
+        return "redirect:/loginform";
+    }
+
+    user.setAvatar(avatar);
+    userRepository.save(user);
+
+    return "redirect:/user";
+}
 
     @PostMapping("/action_createaccount")
     public String createAccount(
