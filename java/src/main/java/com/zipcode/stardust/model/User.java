@@ -39,7 +39,7 @@ public class User implements UserDetails {
     private String avatar;
 
     @Column(nullable = false)
-    private boolean admin = false;
+    private Role role = Role.USER;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
@@ -53,7 +53,7 @@ public class User implements UserDetails {
         this.email = email;
         this.username = username;
         this.passwordHash = encoder.encode(rawPassword);
-        this.admin = "admin".equalsIgnoreCase(username);
+        
     }
 
     public boolean checkPassword(String rawPassword, PasswordEncoder encoder) {
@@ -63,10 +63,7 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        if (admin) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
         return authorities;
     }
 
@@ -101,8 +98,8 @@ public class User implements UserDetails {
     public void setEmail(String email) { this.email = email; }
     public String getAvatar() { return avatar; }
     public void setAvatar(String avatar) { this.avatar = avatar; }
-    public boolean isAdmin() { return admin; }
-    public void setAdmin(boolean admin) { this.admin = admin; }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
     public List<Post> getPosts() { return posts; }
     public void setPosts(List<Post> posts) { this.posts = posts; }
     public List<Comment> getComments() { return comments; }

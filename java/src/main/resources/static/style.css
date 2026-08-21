@@ -19,3 +19,52 @@ body {
     padding: 10px;
     margin-bottom: 10px;
 }
+
+.directory-card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+.directory-item-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    min-width: 0;
+}
+.directory-item-link:hover .directory-item-name {
+    text-decoration: underline;
+}
+.directory-item-name {
+    display: block;
+    font-weight: 600;
+    color: #212529;
+}
+.directory-item-type {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+.directory-card-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-left: 0.75rem;
+}
+.directory-chevron {
+    font-size: 1.25rem;
+    color: #6c757d;
+}
+.directory-action-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: #fff;
+    color: #6c757d;
+    line-height: 1;
+    cursor: pointer;
+}
+.directory-action-btn:hover {
+    background: #f1f3f5;
+}
