@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.zipcode.stardust.model.Comment;
 import com.zipcode.stardust.model.Post;
 import com.zipcode.stardust.model.ReactionType;
+import com.zipcode.stardust.model.Role;
 import com.zipcode.stardust.model.Subforum;
 import com.zipcode.stardust.model.User;
 import com.zipcode.stardust.repository.CommentRepository;
@@ -30,6 +31,7 @@ import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.MarkdownService;
 import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.UsernameGenerator;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 public class ForumController {
@@ -82,6 +84,41 @@ public class ForumController {
         }
     }
 
+    @PostMapping("/action_deletepost")
+    public String deletePost(
+            @RequestParam Long post,
+            Authentication auth) {
+
+        User user = getCurrentUser(auth);
+
+        if (user == null) {
+            return "redirect:/loginform";
+        }
+
+        Optional<Post> opt = postRepository.findById(post);
+
+        if (opt.isEmpty()) {
+            return "redirect:/";
+        }
+
+        Post p = opt.get();
+
+        boolean isOwner = p.getUser().getId().equals(user.getId());
+        boolean isModerator = user.getRole() == Role.MODERATOR
+                || user.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isModerator) {
+            return "redirect:/viewpost?post=" + post;
+        }
+
+        Long subforumId = p.getSubforum().getId();
+
+        p.setDeleted(true);
+        postRepository.save(p);
+
+        return "redirect:/subforum?sub=" + subforumId;
+    }
+
     // =========================
     // HOME PAGE
     // =========================
@@ -112,8 +149,8 @@ public class ForumController {
 
         addCommonAttributes(model, auth);
 
-        List<Post> posts =
-                postRepository.findAllByOrderByPostdateDesc();
+        List<Post> posts = 
+                postRepository.findByDeletedFalseOrderByPostdateDesc();
 
         model.addAttribute("posts", posts);
 
@@ -142,7 +179,7 @@ public class ForumController {
         Subforum sf = opt.get();
 
         List<Post> posts =
-                postRepository.findBySubforumOrderByPostdateDesc(sf);
+                postRepository.findBySubforumAndDeletedFalseOrderByPostdateDesc(sf);
 
         List<Subforum> children =
                 subforumRepository.findByParent(sf);
@@ -411,7 +448,14 @@ public String chooseAvatar(@RequestParam String avatar,
 
         Post p = opt.get();
 
+        if (p.isDeleted()) {
+            model.addAttribute("postDeleted", true);
+            model.addAttribute("post", p);
+            return "viewpost";
+        }
+
         // Convert Markdown into HTML
+
         String renderedContent =
                 markdownService.toHtml(p.getContent());
 
