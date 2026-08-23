@@ -10,9 +10,10 @@ RUN mvn clean package -DskipTests -B
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 RUN groupadd -r spring && useradd -r -g spring spring
+RUN mkdir -p /app/data && chown -R spring:spring /app/data
 USER spring:spring
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 5000
+EXPOSE 9201
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # # --- Runtime stage ---
