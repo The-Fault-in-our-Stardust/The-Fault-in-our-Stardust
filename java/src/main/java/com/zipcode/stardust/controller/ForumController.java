@@ -37,7 +37,6 @@ import com.zipcode.stardust.repository.UserRepository;
 import com.zipcode.stardust.service.ForumService;
 import com.zipcode.stardust.service.MarkdownService;
 import com.zipcode.stardust.service.UsernameGenerator;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 public class ForumController {
@@ -70,7 +69,7 @@ public class ForumController {
         return (User) auth.getPrincipal();
     }
 
-    private void addCommonAttributes(
+       private void addCommonAttributes(
             Model model,
             Authentication auth) {
 
@@ -81,12 +80,18 @@ public class ForumController {
                 && auth.isAuthenticated()
                 && !"anonymousUser".equals(auth.getPrincipal())) {
 
+            User currentUser = getCurrentUser(auth);
+
             model.addAttribute("currentUser", auth.getName());
             model.addAttribute("isLoggedIn", true);
+            model.addAttribute("isModerator",
+                    currentUser.getRole() == Role.MODERATOR
+                            || currentUser.getRole() == Role.ADMIN);
 
         } else {
 
             model.addAttribute("isLoggedIn", false);
+            model.addAttribute("isModerator", false);
         }
     }
 

@@ -10,6 +10,12 @@
 
 <div class="container mt-4">
 
+    <div th:if="${postDeleted}" class="alert alert-secondary">
+        This post has been removed.
+    </div>
+
+    <div th:unless="${postDeleted}">
+
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -29,6 +35,16 @@
         &mdash;
         <span th:text="${post.timeString}">time</span>
     </p>
+
+    <div th:if="${isLoggedIn} and (${currentUser} == ${post.user.username} or ${isModerator})"
+         class="mb-3">
+        <form th:action="@{/action_deletepost}" method="post">
+            <input type="hidden" name="post" th:value="${post.id}" />
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+                Delete Post
+            </button>
+        </form>
+    </div>
 
     <div class="card mb-4">
 
@@ -113,6 +129,16 @@
             </span>
         </small>
 
+        <div th:if="${isLoggedIn} and (${currentUser} == ${comment.user.username} or ${isModerator})"
+             class="mt-1">
+            <form th:action="@{/action_deletecomment}" method="post">
+                <input type="hidden" name="comment" th:value="${comment.id}" />
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    Delete
+                </button>
+            </form>
+        </div>
+
         <!-- COMMENT REACTIONS -->
         <div sec:authorize="isAuthenticated()" class="mt-2">
 
@@ -196,6 +222,8 @@
             Login
         </a>
         to post a comment.
+
+    </div>
 
     </div>
 
