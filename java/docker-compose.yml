@@ -2,7 +2,10 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"
+      # - "5000:5000"
+      - "9201:9201"
+    environment:
+      - SERVER_PORT=9201
     env_file:
       - .env
     volumes:
