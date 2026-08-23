@@ -1,3 +1,33 @@
+## Running with Docker
+
+From the `java/` directory:
+
+```bash
+docker compose up --build
+```
+
+The app will be available at `http://localhost:5000`.
+
+By default this runs against SQLite with no additional setup required — the database file persists in `./data/Stardust.db` across container rebuilds via a mounted volume.
+
+### Switching databases (Postgres/MySQL)
+
+The project ships with Postgres and MySQL drivers available but not active by default. To use one instead of SQLite:
+
+1. Set the following environment variables in a `.env` file in `java/`:
+SPRING_DATASOURCE_URL=<jdbc-url-for-your-db>
+SPRING_DATASOURCE_DRIVER=<driver-class-name>
+SPRING_JPA_DIALECT=<hibernate-dialect>
+2. Add a `db` service to `docker-compose.yml` (Postgres or MySQL image) once the team finalizes which engine to use.
+3. Rebuild: `docker compose up --build`
+
+No code changes are required to switch — `application.properties` reads all datasource config from environment variables with SQLite as the fallback default.
+
+### Notes
+
+- Container runs as a non-root user (`spring`).
+- `mvn spring-boot:run` and `docker compose up` both bind port 5000 — stop one before starting the other.
+
 # Stardust (Java Port)
 
 Stardust is a minimal discussion forum built with Java and Spring Boot.
