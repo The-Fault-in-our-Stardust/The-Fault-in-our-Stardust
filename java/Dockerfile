@@ -12,7 +12,7 @@ WORKDIR /app
 RUN groupadd -r spring && useradd -r -g spring spring
 USER spring:spring
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 5000
+EXPOSE 9201
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # # --- Runtime stage ---
