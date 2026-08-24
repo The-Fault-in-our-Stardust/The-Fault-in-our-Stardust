@@ -1017,3 +1017,51 @@ a:hover {
         text-align: center;
     }
 }
+
+
+/* ========================================
+   BIRD WIKI
+======================================== */
+
+.bird-hero {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.bird-image {
+    width: 45%;
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f1f1;
+}
+
+.bird-info {
+    width: 55%;
+}
+
+
+/* Bird Wiki Mobile */
+
+@media (max-width: 768px) {
+
+    .bird-hero {
+        flex-direction: column;
+        gap: 24px;
+        padding: 20px;
+    }
+
+    .bird-image,
+    .bird-info {
+        width: 100%;
+    }
+
+    .bird-image {
+        min-height: 250px;
+    }
+}

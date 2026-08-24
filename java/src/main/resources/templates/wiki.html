@@ -1,9 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title th:text="${name}">Wiki</title></head>
+
+<head>
+    <title th:text="${name}">Bird Wiki</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+
 <body>
-    <h1 th:text="${name}">Name</h1>
-    <h3 th:text="${subtitle}">Species</h3>
-    <p th:text="${about}">About text.</p>
+
+    <main>
+
+        <section class="bird-hero">
+
+            <div class="bird-image">
+                Bird Image
+            </div>
+
+            <div class="bird-info">
+
+                <h1 th:text="${name}">
+                    Bird Name
+                </h1>
+
+                <h3 th:text="${subtitle}">
+                    Species
+                </h3>
+
+                <p th:text="${about}">
+                    About this bird.
+                </p>
+
+                <a href="/wiki/bird">
+                    Back to Birds
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
 </body>
+
 </html>
