@@ -218,4 +218,14 @@ public class WikiController {
 
         return "wiki";
     }
+   @GetMapping("/bird/import")
+public String importBirds() {
+
+    List<EBirdBird> birds =
+        eBirdService.getBirds(null);
+
+    eBirdService.importBirds(birds);
+
+    return "redirect:/wiki/bird";
+}
 }

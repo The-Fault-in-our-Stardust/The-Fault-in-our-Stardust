@@ -11,6 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.zipcode.stardust.model.Bird;
+import com.zipcode.stardust.model.Species;
+import com.zipcode.stardust.repository.BirdRepository;
+import com.zipcode.stardust.repository.SpeciesRepository;
+
 @Service
 public class EBirdService {
 
@@ -45,10 +50,24 @@ public class EBirdService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private final BirdRepository birdRepository;
+    private final SpeciesRepository speciesRepository;
+
+    public EBirdService(
+            BirdRepository birdRepository,
+            SpeciesRepository speciesRepository) {
+
+        this.birdRepository = birdRepository;
+        this.speciesRepository = speciesRepository;
+    }
+
+    // ========================================
+    // GET FULL EBIRD TAXONOMY
+    // ========================================
+
     private List<EBirdBird> getAllBirds() {
 
         HttpHeaders headers = new HttpHeaders();
-
         headers.set("X-eBirdApiToken", apiKey);
 
         HttpEntity<Void> request =
@@ -71,14 +90,19 @@ public class EBirdService {
         return Arrays.asList(birds);
     }
 
+    // ========================================
+    // BIRD DIRECTORY / SEARCH
+    // ========================================
+
     public List<EBirdBird> getBirds(String search) {
 
         List<EBirdBird> birdList = getAllBirds();
 
-        // If someone searches, search the full eBird taxonomy.
+        // Search the full eBird taxonomy.
         if (search != null && !search.isBlank()) {
 
-            String searchLower = search.toLowerCase();
+            String searchLower =
+                search.trim().toLowerCase();
 
             return birdList.stream()
                 .filter(bird ->
@@ -100,7 +124,8 @@ public class EBirdService {
                 .toList();
         }
 
-        // If there is no search, show featured North American birds.
+        // No search:
+        // show our featured North American birds.
         return FEATURED_NORTH_AMERICAN_BIRDS.stream()
             .map(featuredName ->
                 birdList.stream()
@@ -117,6 +142,10 @@ public class EBirdService {
             .toList();
     }
 
+    // ========================================
+    // FIND ONE EBIRD BIRD
+    // ========================================
+
     public EBirdBird getBirdByCode(String speciesCode) {
 
         return getAllBirds().stream()
@@ -129,49 +158,158 @@ public class EBirdService {
             .findFirst()
             .orElse(null);
     }
-    public List<String> getSpeciesCodesByRegion(String regionCode) {
 
-    String url =
-        "https://api.ebird.org/v2/product/spplist/" + regionCode;
+    // ========================================
+    // GET SPECIES CODES FOR A REGION
+    // ========================================
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("X-eBirdApiToken", apiKey);
+    public List<String> getSpeciesCodesByRegion(
+            String regionCode) {
 
-    HttpEntity<Void> request =
-        new HttpEntity<>(headers);
+        String url =
+            "https://api.ebird.org/v2/product/spplist/"
+            + regionCode;
 
-    ResponseEntity<String[]> response =
-        restTemplate.exchange(
-            url,
-            HttpMethod.GET,
-            request,
-            String[].class
-        );
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-eBirdApiToken", apiKey);
 
-    String[] speciesCodes = response.getBody();
+        HttpEntity<Void> request =
+            new HttpEntity<>(headers);
 
-    if (speciesCodes == null) {
-        return List.of();
+        ResponseEntity<String[]> response =
+            restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                String[].class
+            );
+
+        String[] speciesCodes = response.getBody();
+
+        if (speciesCodes == null) {
+            return List.of();
+        }
+
+        return Arrays.asList(speciesCodes);
     }
 
-    return Arrays.asList(speciesCodes);
-    }
-    public List<EBirdBird> getBirdsByRegion(String regionCode) {
+    // ========================================
+    // GET BIRDS REPORTED IN A REGION
+    // ========================================
 
-    List<String> speciesCodes =
-        getSpeciesCodesByRegion(regionCode);
+    public List<EBirdBird> getBirdsByRegion(
+            String regionCode) {
 
-    List<EBirdBird> allBirds =
-        getAllBirds();
+        List<String> speciesCodes =
+            getSpeciesCodesByRegion(regionCode);
 
-    return allBirds.stream()
-        .filter(bird ->
-            bird.getSpeciesCode() != null
-            &&
-            speciesCodes.contains(
-                bird.getSpeciesCode()
+        List<EBirdBird> allBirds =
+            getAllBirds();
+
+        return allBirds.stream()
+            .filter(bird ->
+                bird.getSpeciesCode() != null
+                &&
+                speciesCodes.contains(
+                    bird.getSpeciesCode()
+                )
             )
-        )
-        .toList();
+            .toList();
+    }
+
+    // ========================================
+    // IMPORT EBIRD DATA INTO DATABASE
+    // ========================================
+
+    public int importBirds(List<EBirdBird> eBirdBirds) {
+
+        int importedCount = 0;
+
+        for (EBirdBird eBirdBird : eBirdBirds) {
+
+            // Skip records without a common name.
+            if (eBirdBird.getComName() == null
+                    || eBirdBird.getComName().isBlank()) {
+
+                continue;
+            }
+
+            // Check whether this bird already exists.
+            Bird existingBird =
+                birdRepository.findByNameIgnoreCase(
+                    eBirdBird.getComName()
+                );
+
+            // If it already exists, don't save it again.
+            if (existingBird != null) {
+                continue;
+            }
+
+            /*
+             * Use eBird's scientific family name
+             * for our Species record.
+             *
+             * Example:
+             * Cardinalidae
+             */
+            String speciesName =
+                eBirdBird.getFamilySciName();
+
+            if (speciesName == null
+                    || speciesName.isBlank()) {
+
+                speciesName = "Unknown";
+            }
+
+            /*
+             * Use eBird's common family name
+             * as the Species description.
+             *
+             * Example:
+             * Cardinals and Allies
+             */
+            String speciesDescription =
+                eBirdBird.getFamilyComName();
+
+            /*
+             * First try to find the Species.
+             *
+             * If it doesn't exist, create it.
+             */
+            Species species =
+                speciesRepository
+                    .findByNameIgnoreCase(speciesName)
+                    .orElse(null);
+
+            if (species == null) {
+
+                species = new Species(
+                    speciesName,
+                    speciesDescription
+                );
+
+                species =
+                    speciesRepository.save(species);
+            }
+
+            /*
+             * Create our database Bird.
+             *
+             * eBird taxonomy doesn't provide a
+             * full "about" description, so we're
+             * leaving about null for now.
+             */
+            Bird bird = new Bird(
+                eBirdBird.getComName(),
+                null,
+                species
+            );
+
+            birdRepository.save(bird);
+
+            importedCount++;
+        }
+
+        return importedCount;
     }
 }
