@@ -49,7 +49,6 @@ public class EBirdService {
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
-
     private final BirdRepository birdRepository;
     private final SpeciesRepository speciesRepository;
 
@@ -98,7 +97,6 @@ public class EBirdService {
 
         List<EBirdBird> birdList = getAllBirds();
 
-        // Search the full eBird taxonomy.
         if (search != null && !search.isBlank()) {
 
             String searchLower =
@@ -124,8 +122,6 @@ public class EBirdService {
                 .toList();
         }
 
-        // No search:
-        // show our featured North American birds.
         return FEATURED_NORTH_AMERICAN_BIRDS.stream()
             .map(featuredName ->
                 birdList.stream()
@@ -227,31 +223,21 @@ public class EBirdService {
 
         for (EBirdBird eBirdBird : eBirdBirds) {
 
-            // Skip records without a common name.
             if (eBirdBird.getComName() == null
                     || eBirdBird.getComName().isBlank()) {
 
                 continue;
             }
 
-            // Check whether this bird already exists.
             Bird existingBird =
                 birdRepository.findByNameIgnoreCase(
                     eBirdBird.getComName()
                 );
 
-            // If it already exists, don't save it again.
             if (existingBird != null) {
                 continue;
             }
 
-            /*
-             * Use eBird's scientific family name
-             * for our Species record.
-             *
-             * Example:
-             * Cardinalidae
-             */
             String speciesName =
                 eBirdBird.getFamilySciName();
 
@@ -261,21 +247,9 @@ public class EBirdService {
                 speciesName = "Unknown";
             }
 
-            /*
-             * Use eBird's common family name
-             * as the Species description.
-             *
-             * Example:
-             * Cardinals and Allies
-             */
             String speciesDescription =
                 eBirdBird.getFamilyComName();
 
-            /*
-             * First try to find the Species.
-             *
-             * If it doesn't exist, create it.
-             */
             Species species =
                 speciesRepository
                     .findByNameIgnoreCase(speciesName)
@@ -295,12 +269,17 @@ public class EBirdService {
             /*
              * Create our database Bird.
              *
-             * eBird taxonomy doesn't provide a
-             * full "about" description, so we're
-             * leaving about null for now.
+             * eBird provides:
+             * common name
+             * scientific name
+             *
+             * eBird taxonomy does not provide a full
+             * "about" description here, so about stays null.
              */
+
             Bird bird = new Bird(
                 eBirdBird.getComName(),
+                eBirdBird.getSciName(),
                 null,
                 species
             );

@@ -1,44 +1,238 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title th:text="${name}">Bird Wiki</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${name} + ' | Bye Bye Birdie'">
+        Bird Profile | Bye Bye Birdie
+    </title>
+
     <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 
 <body>
 
-    <main>
+<div class="site-wrapper">
 
-        <section class="bird-hero">
+    <!-- HEADER -->
+    <div th:replace="~{header :: header}"></div>
 
-            <div class="bird-image">
-                Bird Image
-            </div>
 
-            <div class="bird-info">
+    <!-- MAIN PAGE CONTENT -->
+    <main class="site-main">
+
+        <div class="site-container wiki-page">
+
+            <!-- PAGE HEADER -->
+            <section class="page-header">
 
                 <h1 th:text="${name}">
-                    Bird Name
+                    Northern Cardinal
                 </h1>
 
-                <h3 th:text="${subtitle}">
-                    Species
-                </h3>
-
-                <p th:text="${about}">
-                    About this bird.
+                <p class="page-intro">
+                    Learn more about this bird, including identification
+                    information and species details.
                 </p>
 
-                <a href="/wiki/bird">
-                    Back to Birds
+            </section>
+
+
+            <!-- BREADCRUMB -->
+            <div class="wiki-breadcrumb">
+
+                <a th:href="@{/wiki}">
+                    Wiki
                 </a>
+
+                <span>/</span>
+
+                <a th:href="@{/wiki/bird}">
+                    Birds
+                </a>
+
+                <span>/</span>
+
+                <span th:text="${name}">
+                    Northern Cardinal
+                </span>
 
             </div>
 
-        </section>
+
+            <!-- MAIN BIRD LAYOUT -->
+            <div class="wiki-layout">
+
+
+                <!-- LEFT / MAIN CONTENT -->
+                <article class="bird-profile-card">
+
+                    <div class="bird-hero">
+
+
+                        <!-- BIRD IMAGE -->
+                        <div class="bird-image">
+
+                            <img th:if="${imageUrl != null}"
+                                 th:src="${imageUrl}"
+                                 th:alt="${name}">
+
+                            <span th:if="${imageUrl == null}">
+                                Bird Image
+                            </span>
+
+                        </div>
+
+
+                        <!-- BIRD INFORMATION -->
+                        <div class="bird-info">
+
+                            <span class="bird-label">
+                                Bird Profile
+                            </span>
+
+                            <h1 th:text="${name}">
+                                Northern Cardinal
+                            </h1>
+
+                            <h3 th:text="${scientificName != null ? scientificName : subtitle}">
+                                Cardinalis cardinalis
+                            </h3>
+
+
+                            <h2>
+                                About This Bird
+                            </h2>
+
+                            <p th:if="${about != null and !#strings.isEmpty(about)}"
+                               th:text="${about}">
+
+                                A mid-sized songbird with a distinctive crest
+                                and vivid red plumage.
+
+                            </p>
+
+
+                            <p th:if="${about == null or #strings.isEmpty(about)}">
+
+                                More information about this bird is coming soon.
+
+                            </p>
+
+
+                            <a class="back-to-birds"
+                               th:href="@{/wiki/bird}">
+
+                                ← Back to Birds
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <!-- RIGHT SIDEBAR -->
+                <aside class="wiki-sidebar">
+
+
+                    <!-- QUICK FACTS -->
+                    <section class="wiki-sidebar-card">
+
+                        <h2>
+                            Quick Facts
+                        </h2>
+
+
+                        <!-- COMMON NAME -->
+                        <div class="quick-fact">
+
+                            <span class="quick-fact-label">
+                                Common Name
+                            </span>
+
+                            <span class="quick-fact-value"
+                                  th:text="${name}">
+
+                                Northern Cardinal
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- SCIENTIFIC NAME -->
+                        <div class="quick-fact"
+                             th:if="${scientificName != null}">
+
+                            <span class="quick-fact-label">
+                                Scientific Name
+                            </span>
+
+                            <span class="quick-fact-value"
+                                  th:text="${scientificName}">
+
+                                Cardinalis cardinalis
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- FAMILY -->
+                        <div class="quick-fact">
+
+                            <span class="quick-fact-label">
+                                Family
+                            </span>
+
+                            <span class="quick-fact-value"
+                                  th:text="${subtitle}">
+
+                                Cardinalidae
+
+                            </span>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- EXPLORE MORE -->
+                    <section class="wiki-sidebar-card">
+
+                        <h2>
+                            Explore More
+                        </h2>
+
+                        <div class="wiki-links">
+
+                            <a th:href="@{/wiki/bird}">
+                                View All Birds
+                            </a>
+
+                            <a th:href="@{/wiki/species}">
+                                View Species
+                            </a>
+
+                        </div>
+
+                    </section>
+
+
+                </aside>
+
+            </div>
+
+        </div>
 
     </main>
+
+</div>
 
 </body>
 

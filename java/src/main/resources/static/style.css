@@ -1017,51 +1017,267 @@ a:hover {
         text-align: center;
     }
 }
-
-
 /* ========================================
-   BIRD WIKI
+   BIRD WIKI DETAIL PAGE
 ======================================== */
 
-.bird-hero {
-    display: flex;
-    gap: 40px;
-    align-items: center;
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 30px;
+.wiki-page {
+    width: 100%;
 }
 
+.wiki-header {
+    margin-bottom: 28px;
+}
+
+.wiki-header h1 {
+    margin: 0 0 6px;
+    font-size: 2.3rem;
+}
+
+.wiki-header p {
+    margin: 0;
+    color: #6c757d;
+}
+
+
+/* Breadcrumb */
+
+.wiki-breadcrumb {
+    background-color: #eef1f3;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 28px;
+    font-size: 0.9rem;
+}
+
+.wiki-breadcrumb a {
+    font-weight: 600;
+}
+
+.wiki-breadcrumb span {
+    margin: 0 8px;
+    color: #8a8a8a;
+}
+
+
+/* Main page layout */
+
+.wiki-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 0.8fr);
+    gap: 40px;
+    align-items: start;
+}
+
+
+/* Main bird profile */
+
+.bird-profile-card {
+    background-color: white;
+    border: 1px solid var(--nest-cream);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.bird-hero {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
+    gap: 32px;
+    padding: 32px;
+    align-items: center;
+}
+
+
+/* Bird image */
+
 .bird-image {
-    width: 45%;
-    min-height: 350px;
+    width: 100%;
+    height: 380px;
+    background-color: #eeeeee;
+    border-radius: 12px;
+    overflow: hidden;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f1f1f1;
 }
+
+.bird-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
+/* Bird information */
 
 .bird-info {
-    width: 55%;
+    min-width: 0;
+}
+
+.bird-label {
+    display: inline-block;
+    margin-bottom: 10px;
+
+    color: var(--sky-teal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.bird-info h1 {
+    margin: 0 0 8px;
+    font-size: 2.4rem;
+    line-height: 1.2;
+}
+
+.bird-info h3 {
+    margin: 0 0 22px;
+    color: var(--sky-teal);
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+.bird-info h2 {
+    margin: 0 0 10px;
+    font-size: 1.25rem;
+}
+
+.bird-info p {
+    margin: 0 0 22px;
+    color: #555d62;
+    line-height: 1.8;
+}
+
+.back-to-birds {
+    display: inline-block;
+    margin-top: 6px;
+    font-weight: 700;
 }
 
 
-/* Bird Wiki Mobile */
+/* Sidebar */
+
+.wiki-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.wiki-sidebar-card {
+    background-color: white;
+    border: 1px solid var(--nest-cream);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
+
+.wiki-sidebar-card h2 {
+    margin: 0 0 18px;
+    font-size: 1.25rem;
+}
+
+
+/* Quick facts */
+
+.quick-fact {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--nest-cream);
+}
+
+.quick-fact:first-of-type {
+    padding-top: 0;
+}
+
+.quick-fact:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.quick-fact-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #777;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.quick-fact-value {
+    color: var(--charcoal);
+    font-weight: 700;
+}
+
+
+/* Explore links */
+
+.wiki-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wiki-links a {
+    padding: 10px 12px;
+    background-color: var(--nest-cream);
+    border-radius: 7px;
+    font-weight: 600;
+}
+
+.wiki-links a:hover {
+    background-color: var(--soft-blue);
+}
+
+
+/* ========================================
+   BIRD WIKI RESPONSIVE
+======================================== */
+
+@media (max-width: 900px) {
+
+    .wiki-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .wiki-sidebar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 
 @media (max-width: 768px) {
 
     .bird-hero {
-        flex-direction: column;
-        gap: 24px;
-        padding: 20px;
-    }
-
-    .bird-image,
-    .bird-info {
-        width: 100%;
+        grid-template-columns: 1fr;
+        padding: 22px;
     }
 
     .bird-image {
-        min-height: 250px;
+        height: 320px;
+    }
+
+    .bird-info h1 {
+        font-size: 2rem;
+    }
+
+    .wiki-sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .bird-image {
+        height: 250px;
+    }
+
+    .bird-info h1 {
+        font-size: 1.7rem;
     }
 }

@@ -1,5 +1,12 @@
 package com.zipcode.stardust.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
 import com.zipcode.stardust.model.Bird;
 import com.zipcode.stardust.model.Role;
 import com.zipcode.stardust.model.Species;
@@ -9,13 +16,6 @@ import com.zipcode.stardust.repository.BirdRepository;
 import com.zipcode.stardust.repository.SpeciesRepository;
 import com.zipcode.stardust.repository.SubforumRepository;
 import com.zipcode.stardust.repository.UserRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 
 @Component
@@ -90,15 +90,19 @@ public class DataInitializer implements ApplicationRunner {
                 "A family of birds that includes crows, ravens, and jays.");
             speciesRepository.save(corvidSpecies);
 
-            Bird cardinal = new Bird("Northern Cardinal",
-                "A mid-sized songbird with a distinctive crest and, in males, vivid red plumage.",
-                cardinalSpecies);
-            birdRepository.save(cardinal);
+         Bird cardinal = new Bird(
+        "Northern Cardinal",
+        "Cardinalis cardinalis",
+        "A mid-sized songbird with a distinctive crest and, in males, vivid red plumage.",
+        cardinalSpecies);
+        birdRepository.save(cardinal);
 
-            Bird crow = new Bird("American Crow",
-                "A large, all-black bird known for its intelligence and adaptability.",
-                corvidSpecies);
-            birdRepository.save(crow);
+        Bird crow = new Bird(
+        "American Crow",
+        "Corvus brachyrhynchos",
+        "A large, all-black bird known for its intelligence and adaptability.",
+        corvidSpecies);
+        birdRepository.save(crow);
         }
     }
 }

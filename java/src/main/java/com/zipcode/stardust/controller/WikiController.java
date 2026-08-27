@@ -1,5 +1,6 @@
 package com.zipcode.stardust.controller;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriUtils;
 
 import com.zipcode.stardust.model.Bird;
 import com.zipcode.stardust.model.Species;
@@ -27,16 +29,7 @@ public class WikiController {
     private final SpeciesRepository speciesRepository;
     private final EBirdService eBirdService;
 
-    /*
-     * Maps the state name typed by the user
-     * to the region code expected by eBird.
-     *
-     * Example:
-     * Delaware -> US-DE
-     * Maryland -> US-MD
-     */
     private static final Map<String, String> STATE_CODES = Map.ofEntries(
-
         Map.entry("alabama", "US-AL"),
         Map.entry("alaska", "US-AK"),
         Map.entry("arizona", "US-AZ"),
@@ -110,28 +103,14 @@ public class WikiController {
 
         List<EBirdBird> species = List.of();
 
-        /*
-         * Only search eBird when the user actually
-         * entered something into the location box.
-         */
         if (location != null && !location.isBlank()) {
 
-            /*
-             * trim() removes accidental spaces.
-             *
-             * toLowerCase() lets "Delaware",
-             * "delaware", and "DELAWARE" all work.
-             */
             String normalizedLocation =
                 location.trim().toLowerCase();
 
             String regionCode =
                 STATE_CODES.get(normalizedLocation);
 
-            /*
-             * If the state exists in our map,
-             * send its eBird region code to the service.
-             */
             if (regionCode != null) {
                 species =
                     eBirdService.getBirdsByRegion(regionCode);
@@ -188,7 +167,66 @@ public class WikiController {
             "subtitle",
             bird.getSpecies().getName()
         );
-        model.addAttribute("about", bird.getAbout());
+        model.addAttribute(
+            "scientificName",
+            bird.getScientificName()
+        );
+        model.addAttribute(
+            "about",
+            bird.getAbout()
+        );
+
+        addBirdImage(
+            model,
+            bird.getScientificName()
+        );
+
+        return "wiki";
+    }
+
+    // ========================================
+    // EBIRD BIRD PAGE
+    // ========================================
+
+    @GetMapping("/bird/code/{speciesCode}")
+    public String getBirdByCode(
+            @PathVariable String speciesCode,
+            Model model) {
+
+        EBirdBird bird =
+            eBirdService.getBirdByCode(speciesCode);
+
+        if (bird == null) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Bird not found"
+            );
+        }
+
+        model.addAttribute(
+            "name",
+            bird.getComName()
+        );
+
+        model.addAttribute(
+            "scientificName",
+            bird.getSciName()
+        );
+
+        model.addAttribute(
+            "subtitle",
+            bird.getFamilySciName()
+        );
+
+        model.addAttribute(
+            "about",
+            null
+        );
+
+        addBirdImage(
+            model,
+            bird.getSciName()
+        );
 
         return "wiki";
     }
@@ -202,15 +240,24 @@ public class WikiController {
             @PathVariable Long id,
             Model model) {
 
-        Species species = speciesRepository.findById(id)
-            .orElseThrow(
-                () -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND
-                )
-            );
+        Species species =
+            speciesRepository.findById(id)
+                .orElseThrow(
+                    () -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND
+                    )
+                );
 
-        model.addAttribute("name", species.getName());
-        model.addAttribute("subtitle", "Species");
+        model.addAttribute(
+            "name",
+            species.getName()
+        );
+
+        model.addAttribute(
+            "subtitle",
+            "Species"
+        );
+
         model.addAttribute(
             "about",
             species.getDescription()
@@ -218,14 +265,49 @@ public class WikiController {
 
         return "wiki";
     }
-   @GetMapping("/bird/import")
-public String importBirds() {
 
-    List<EBirdBird> birds =
-        eBirdService.getBirds(null);
+    // ========================================
+    // IMPORT EBIRD BIRDS
+    // ========================================
 
-    eBirdService.importBirds(birds);
+    @GetMapping("/bird/import")
+    public String importBirds() {
 
-    return "redirect:/wiki/bird";
-}
+        List<EBirdBird> birds =
+            eBirdService.getBirds(null);
+
+        eBirdService.importBirds(birds);
+
+        return "redirect:/wiki/bird";
+    }
+
+    // ========================================
+    // BIRDNET IMAGE HELPER
+    // ========================================
+
+    private void addBirdImage(
+            Model model,
+            String scientificName) {
+
+        if (scientificName == null
+                || scientificName.isBlank()) {
+
+            return;
+        }
+
+        String encodedScientificName =
+            UriUtils.encodePathSegment(
+                scientificName,
+                StandardCharsets.UTF_8
+            );
+
+        String imageUrl =
+            "https://birdnet.cornell.edu/taxonomy/api/image/"
+            + encodedScientificName;
+
+        model.addAttribute(
+            "imageUrl",
+            imageUrl
+        );
+    }
 }
